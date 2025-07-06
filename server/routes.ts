@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertSessionSchema, insertCommitSchema, insertTaskSchema, insertGoalsSchema, insertActivitySchema } from "@shared/schema";
+import { insertSessionSchema, insertCommitSchema, insertTaskSchema, insertGoalsSchema, insertActivitySchema, insertGitSyncSchema, insertBreakSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Sessions
@@ -266,6 +266,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(exportData);
     } catch (error) {
       res.status(500).json({ error: "Failed to export data" });
+    }
+  });
+
+  // Git Sync routes
+  app.post("/api/git/sync", async (req, res) => {
+    try {
+      const gitSyncData = insertGitSyncSchema.parse(req.body);
+      const gitSync = await storage.createGitSync(gitSyncData);
+      
+      // Create activity
+      await storage.createActivity({
+        type: "git",
+        description: `Git ${gitSync.action}: ${gitSync.repository}${gitSync.commitMessage ? ` - ${gitSync.commitMessage}` : ''}`
+      });
+      
+      res.json(gitSync);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid git sync data" });
+    }
+  });
+
+  app.get("/api/git/syncs", async (req, res) => {
+    try {
+      const { date } = req.query;
+      if (!date || typeof date !== 'string') {
+        return res.status(400).json({ error: "Date parameter is required" });
+      }
+      const gitSyncs = await storage.getGitSyncsForDate(date);
+      res.json(gitSyncs);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get git syncs" });
+    }
+  });
+
+  // Break tracking routes
+  app.post("/api/breaks", async (req, res) => {
+    try {
+      const breakData = insertBreakSchema.parse(req.body);
+      const breakRecord = await storage.createBreak(breakData);
+      
+      // Create activity
+      await storage.createActivity({
+        type: "break",
+        description: `Started ${breakRecord.type} break (${breakRecord.duration} minutes)`
+      });
+      
+      res.json(breakRecord);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid break data" });
+    }
+  });
+
+  app.post("/api/breaks/end", async (req, res) => {
+    try {
+      const { endTime } = req.body;
+      const breakRecord = await storage.endActiveBreak(new Date(endTime));
+      
+      if (breakRecord) {
+        // Create activity
+        await storage.createActivity({
+          type: "break",
+          description: `Ended ${breakRecord.type} break`
+        });
+      }
+      
+      res.json(breakRecord);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to end break" });
+    }
+  });
+
+  app.get("/api/breaks/active", async (req, res) => {
+    try {
+      const activeBreaks = await storage.getActiveBreaks();
+      res.json(activeBreaks);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get active breaks" });
+    }
+  });
+
+  app.get("/api/breaks", async (req, res) => {
+    try {
+      const { date } = req.query;
+      if (!date || typeof date !== 'string') {
+        return res.status(400).json({ error: "Date parameter is required" });
+      }
+      const breaks = await storage.getBreaksForDate(date);
+      res.json(breaks);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get breaks" });
     }
   });
 

@@ -75,6 +75,43 @@ export const insertActivitySchema = createInsertSchema(activities).pick({
   description: true,
 });
 
+// Git sync table
+export const gitSyncs = pgTable("git_syncs", {
+  id: serial("id").primaryKey(),
+  repository: text("repository").notNull(),
+  branch: text("branch").notNull(),
+  action: text("action").notNull(), // pull, push, sync
+  commitMessage: text("commit_message"),
+  status: text("status").notNull().default("pending"), // pending, success, failed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertGitSyncSchema = createInsertSchema(gitSyncs).pick({
+  repository: true,
+  branch: true,
+  action: true,
+  commitMessage: true,
+});
+
+// Break tracking table
+export const breaks = pgTable("breaks", {
+  id: serial("id").primaryKey(),
+  type: text("type").notNull(), // short, long, custom
+  duration: integer("duration").notNull(), // in minutes
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time"),
+  isActive: boolean("is_active").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertBreakSchema = createInsertSchema(breaks).pick({
+  type: true,
+  duration: true,
+  startTime: true,
+  endTime: true,
+  isActive: true,
+});
+
 export type Session = typeof sessions.$inferSelect;
 export type InsertSession = z.infer<typeof insertSessionSchema>;
 export type Commit = typeof commits.$inferSelect;
@@ -85,3 +122,7 @@ export type Goals = typeof goals.$inferSelect;
 export type InsertGoals = z.infer<typeof insertGoalsSchema>;
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
+export type GitSync = typeof gitSyncs.$inferSelect;
+export type InsertGitSync = z.infer<typeof insertGitSyncSchema>;
+export type Break = typeof breaks.$inferSelect;
+export type InsertBreak = z.infer<typeof insertBreakSchema>;

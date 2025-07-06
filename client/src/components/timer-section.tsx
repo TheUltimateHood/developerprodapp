@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTimer } from "@/hooks/use-timer";
 import { useToast } from "@/hooks/use-toast";
+import { Play, Pause, Square, Clock, TrendingUp, Zap } from "lucide-react";
 import type { Session } from "@shared/schema";
 
 export default function TimerSection() {
@@ -133,12 +134,17 @@ export default function TimerSection() {
 
   return (
     <div className="mb-8">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 p-8 bg-gradient-to-br from-white to-slate-50">
         <div className="text-center">
-          <h2 className="text-lg font-semibold text-slate-800 mb-6">Current Coding Session</h2>
+          <div className="flex items-center justify-center space-x-2 mb-6">
+            <div className="bg-gradient-to-r from-emerald-500 to-blue-500 p-2 rounded-lg">
+              <Clock className="h-5 w-5 text-white" />
+            </div>
+            <h2 className="text-lg font-semibold text-slate-800">Current Coding Session</h2>
+          </div>
           
           <div className="mb-8">
-            <div className="text-6xl font-mono font-bold text-slate-800 mb-4">
+            <div className="text-6xl font-mono font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4 tracking-wider">
               {formatTime(time)}
             </div>
             
@@ -166,9 +172,9 @@ export default function TimerSection() {
                 <Button
                   onClick={handleToggleTimer}
                   disabled={startSessionMutation.isPending}
-                  className="bg-primary hover:bg-primary/90 px-8 py-3"
+                  className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 px-8 py-3 text-white shadow-lg hover:shadow-xl transition-all duration-200"
                 >
-                  <i className="fas fa-play mr-2"></i>
+                  <Play className="h-4 w-4 mr-2" />
                   Start Session
                 </Button>
               ) : (
@@ -176,18 +182,18 @@ export default function TimerSection() {
                   <Button
                     onClick={handleToggleTimer}
                     disabled={pauseSessionMutation.isPending}
-                    className="bg-primary hover:bg-primary/90 px-8 py-3"
+                    className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 px-8 py-3 text-white shadow-lg hover:shadow-xl transition-all duration-200"
                   >
-                    <i className={`fas ${isRunning ? 'fa-pause' : 'fa-play'} mr-2`}></i>
+                    {isRunning ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
                     {isRunning ? 'Pause Session' : 'Resume Session'}
                   </Button>
                   <Button
                     onClick={handleStopTimer}
                     disabled={endSessionMutation.isPending}
                     variant="secondary"
-                    className="bg-slate-600 hover:bg-slate-700 text-white px-8 py-3"
+                    className="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200"
                   >
-                    <i className="fas fa-stop mr-2"></i>
+                    <Square className="h-4 w-4 mr-2" />
                     End Session
                   </Button>
                 </>
@@ -195,25 +201,34 @@ export default function TimerSection() {
             </div>
           </div>
 
-          <div className="border-t border-slate-200 pt-6">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-slate-800 font-mono">
+          <div className="border-t border-slate-200/50 pt-6">
+            <div className="grid grid-cols-3 gap-6 text-center">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                <div className="flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                </div>
+                <div className="text-2xl font-bold text-blue-700 font-mono">
                   {dashboardData?.sessions || 0}
                 </div>
-                <div className="text-sm text-slate-500">Sessions Today</div>
+                <div className="text-sm text-blue-600 font-medium">Sessions Today</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-800 font-mono">
+              <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-100">
+                <div className="flex items-center justify-center mb-2">
+                  <Clock className="h-5 w-5 text-emerald-500" />
+                </div>
+                <div className="text-2xl font-bold text-emerald-700 font-mono">
                   {dashboardData?.totalTime ? formatDuration(dashboardData.totalTime) : '0m'}
                 </div>
-                <div className="text-sm text-slate-500">Total Time</div>
+                <div className="text-sm text-emerald-600 font-medium">Total Time</div>
               </div>
-              <div>
-                <div className="text-2xl font-bold text-emerald-600 font-mono">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+                <div className="flex items-center justify-center mb-2">
+                  <Zap className="h-5 w-5 text-amber-500" />
+                </div>
+                <div className="text-2xl font-bold text-amber-700 font-mono">
                   {dashboardData?.averageSession ? formatDuration(dashboardData.averageSession) : '0m'}
                 </div>
-                <div className="text-sm text-slate-500">Avg Session</div>
+                <div className="text-sm text-amber-600 font-medium">Avg Session</div>
               </div>
             </div>
           </div>

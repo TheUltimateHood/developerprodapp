@@ -32,12 +32,14 @@ DevTrack is a modern developer productivity tracking application built as a full
 ## Key Components
 
 ### Database Schema
-The application uses five main tables:
+The application uses seven main tables:
 - **Sessions**: Track coding sessions with project names, start/end times, and duration
 - **Commits**: Log commit data with repository, message, and lines changed
 - **Tasks**: Manage todo items with completion status
 - **Goals**: Set daily targets for coding time, commits, and tasks
 - **Activities**: Record activity feed for recent actions
+- **Git Syncs**: Track git repository synchronization operations
+- **Breaks**: Record break sessions with type, duration, and timing
 
 ### API Endpoints
 - **Sessions**: CRUD operations for coding sessions (`/api/sessions`)
@@ -46,6 +48,8 @@ The application uses five main tables:
 - **Goals**: Daily goal setting and tracking (`/api/goals`)
 - **Activities**: Recent activity feed (`/api/activities`)
 - **Dashboard**: Aggregated metrics endpoint (`/api/dashboard`)
+- **Git Sync**: Repository synchronization (`/api/git/sync`, `/api/git/syncs`)
+- **Breaks**: Break tracking and timer management (`/api/breaks/*`)
 
 ### Frontend Components
 - **Timer Section**: Session tracking with start/stop functionality
@@ -106,8 +110,32 @@ The application uses five main tables:
 5. **Memory Storage Fallback**: MemStorage class provides development flexibility without database dependency
 6. **Canvas Charts**: Custom implementation for specific productivity visualization needs
 
+## Recent Changes
+
+### January 03, 2025 - Major UI and Feature Upgrade
+- **Icons Migration**: Replaced FontAwesome with Lucide React icons for better performance and consistency
+- **UI Modernization**: 
+  - Added gradient backgrounds and glassmorphism effects
+  - Improved header with better navigation and visual hierarchy
+  - Enhanced timer section with color-coded metrics cards
+  - Modernized quick actions with hover effects and descriptions
+- **Git Integration**: 
+  - Added Git Sync modal for repository management
+  - Support for pull, push, and sync operations
+  - Commit message handling and status tracking
+  - New API endpoints: `/api/git/sync`, `/api/git/syncs`
+- **Break Tracking System**:
+  - Break timer modal with short (5min), long (15min), and custom durations
+  - Visual progress indicator with circular timer
+  - Pause/resume/stop break functionality
+  - Activity logging for break sessions
+  - New API endpoints: `/api/breaks/*`
+- **Database Schema**: Added `git_syncs` and `breaks` tables with full CRUD operations
+- **Enhanced Quick Actions**: Added Git Sync and Take Break actions with improved visual design
+
 ## Changelog
 - July 05, 2025. Initial setup
+- January 03, 2025. Major feature and UI upgrade with git integration and break tracking
 
 ## User Preferences
 

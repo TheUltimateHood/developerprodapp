@@ -4,6 +4,8 @@ import {
   tasks, 
   goals, 
   activities,
+  gitSyncs,
+  breaks,
   type Session, 
   type InsertSession,
   type Commit,
@@ -13,7 +15,11 @@ import {
   type Goals,
   type InsertGoals,
   type Activity,
-  type InsertActivity
+  type InsertActivity,
+  type GitSync,
+  type InsertGitSync,
+  type Break,
+  type InsertBreak
 } from "@shared/schema";
 
 export interface IStorage {
@@ -40,6 +46,16 @@ export interface IStorage {
   // Activities
   getRecentActivities(limit: number): Promise<Activity[]>;
   createActivity(activity: InsertActivity): Promise<Activity>;
+  
+  // Git Syncs
+  getGitSyncsForDate(date: string): Promise<GitSync[]>;
+  createGitSync(gitSync: InsertGitSync): Promise<GitSync>;
+  
+  // Breaks
+  getActiveBreaks(): Promise<Break[]>;
+  getBreaksForDate(date: string): Promise<Break[]>;
+  createBreak(breakData: InsertBreak): Promise<Break>;
+  endActiveBreak(endTime: Date): Promise<Break | null>;
 }
 
 export class MemStorage implements IStorage {
@@ -48,11 +64,15 @@ export class MemStorage implements IStorage {
   private tasks: Map<number, Task>;
   private goals: Map<string, Goals>;
   private activities: Map<number, Activity>;
+  private gitSyncs: Map<number, GitSync>;
+  private breaks: Map<number, Break>;
   private currentSessionId: number;
   private currentCommitId: number;
   private currentTaskId: number;
   private currentGoalsId: number;
   private currentActivityId: number;
+  private currentGitSyncId: number;
+  private currentBreakId: number;
 
   constructor() {
     this.sessions = new Map();
@@ -60,11 +80,15 @@ export class MemStorage implements IStorage {
     this.tasks = new Map();
     this.goals = new Map();
     this.activities = new Map();
+    this.gitSyncs = new Map();
+    this.breaks = new Map();
     this.currentSessionId = 1;
     this.currentCommitId = 1;
     this.currentTaskId = 1;
     this.currentGoalsId = 1;
     this.currentActivityId = 1;
+    this.currentGitSyncId = 1;
+    this.currentBreakId = 1;
   }
 
   async getActiveSessions(): Promise<Session[]> {
@@ -195,6 +219,71 @@ export class MemStorage implements IStorage {
     };
     this.activities.set(id, activity);
     return activity;
+  }
+
+  // Git Sync methods
+  async getGitSyncsForDate(date: string): Promise<GitSync[]> {
+    const targetDate = new Date(date);
+    const startOfTargetDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+    const endOfTargetDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() + 1);
+
+    return Array.from(this.gitSyncs.values()).filter(gitSync => {
+      const syncDate = new Date(gitSync.createdAt);
+      return syncDate >= startOfTargetDate && syncDate < endOfTargetDate;
+    });
+  }
+
+  async createGitSync(insertGitSync: InsertGitSync): Promise<GitSync> {
+    const id = this.currentGitSyncId++;
+    const gitSync: GitSync = {
+      ...insertGitSync,
+      id,
+      status: "success",
+      createdAt: new Date()
+    };
+    this.gitSyncs.set(id, gitSync);
+    return gitSync;
+  }
+
+  // Break methods
+  async getActiveBreaks(): Promise<Break[]> {
+    return Array.from(this.breaks.values()).filter(breakRecord => breakRecord.isActive);
+  }
+
+  async getBreaksForDate(date: string): Promise<Break[]> {
+    const targetDate = new Date(date);
+    const startOfTargetDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+    const endOfTargetDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() + 1);
+
+    return Array.from(this.breaks.values()).filter(breakRecord => {
+      const breakDate = new Date(breakRecord.startTime);
+      return breakDate >= startOfTargetDate && breakDate < endOfTargetDate;
+    });
+  }
+
+  async createBreak(insertBreak: InsertBreak): Promise<Break> {
+    const id = this.currentBreakId++;
+    const breakRecord: Break = {
+      ...insertBreak,
+      id,
+      createdAt: new Date()
+    };
+    this.breaks.set(id, breakRecord);
+    return breakRecord;
+  }
+
+  async endActiveBreak(endTime: Date): Promise<Break | null> {
+    const activeBreaks = await this.getActiveBreaks();
+    if (activeBreaks.length === 0) return null;
+
+    const activeBreak = activeBreaks[0];
+    const updatedBreak: Break = {
+      ...activeBreak,
+      endTime,
+      isActive: false
+    };
+    this.breaks.set(activeBreak.id, updatedBreak);
+    return updatedBreak;
   }
 }
 
