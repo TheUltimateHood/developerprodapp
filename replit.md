@@ -32,24 +32,31 @@ DevTrack is a modern developer productivity tracking application built as a full
 ## Key Components
 
 ### Database Schema
-The application uses seven main tables:
-- **Sessions**: Track coding sessions with project names, start/end times, and duration
-- **Commits**: Log commit data with repository, message, and lines changed
-- **Tasks**: Manage todo items with completion status
+The application uses ten comprehensive tables:
+- **Sessions**: Enhanced tracking with LoC written/deleted, productivity scores, and detailed metadata
+- **Commits**: Extended with lines added/deleted, files changed, commit hash, and branch tracking
+- **Tasks**: Manage todo items with completion status and timestamps
 - **Goals**: Set daily targets for coding time, commits, and tasks
-- **Activities**: Record activity feed for recent actions
-- **Git Syncs**: Track git repository synchronization operations
+- **Activities**: Record comprehensive activity feed for all user actions
+- **Git Syncs**: Track repository synchronization operations with status and metadata
 - **Breaks**: Record break sessions with type, duration, and timing
+- **Issues**: Full bug/feature tracking with priorities, status, assignments, and time estimation
+- **Metrics**: Daily code quality, performance, and productivity metrics aggregation
+- **File Changes**: Detailed tracking of file modifications with LoC changes per file
 
 ### API Endpoints
-- **Sessions**: CRUD operations for coding sessions (`/api/sessions`)
-- **Commits**: Log and retrieve commit data (`/api/commits`)
+- **Sessions**: Enhanced CRUD operations for coding sessions (`/api/sessions`)
+- **Commits**: Extended commit data with LoC tracking (`/api/commits`)
 - **Tasks**: Task management operations (`/api/tasks`)
 - **Goals**: Daily goal setting and tracking (`/api/goals`)
-- **Activities**: Recent activity feed (`/api/activities`)
+- **Activities**: Comprehensive activity feed (`/api/activities`)
 - **Dashboard**: Aggregated metrics endpoint (`/api/dashboard`)
 - **Git Sync**: Repository synchronization (`/api/git/sync`, `/api/git/syncs`)
 - **Breaks**: Break tracking and timer management (`/api/breaks/*`)
+- **Issues**: Full issue/bug tracking system (`/api/issues/*`)
+- **Enhanced Metrics**: Advanced analytics and productivity metrics (`/api/metrics/enhanced/*`)
+- **File Changes**: Detailed file modification tracking (`/api/file-changes`)
+- **Data Management**: Backup/restore and CSV export (`/api/backup`, `/api/restore/*`, `/api/export/csv`)
 
 ### Frontend Components
 - **Timer Section**: Session tracking with start/stop functionality
@@ -112,13 +119,14 @@ The application uses seven main tables:
 
 ## Recent Changes
 
-### January 03, 2025 - Major UI and Feature Upgrade
+### January 03, 2025 - Major UI and Professional Enhancement
 - **Icons Migration**: Replaced FontAwesome with Lucide React icons for better performance and consistency
 - **UI Modernization**: 
   - Added gradient backgrounds and glassmorphism effects
   - Improved header with better navigation and visual hierarchy
   - Enhanced timer section with color-coded metrics cards
   - Modernized quick actions with hover effects and descriptions
+  - Professional tabbed interface (Overview, Analytics, Management)
 - **Git Integration**: 
   - Added Git Sync modal for repository management
   - Support for pull, push, and sync operations
@@ -130,8 +138,30 @@ The application uses seven main tables:
   - Pause/resume/stop break functionality
   - Activity logging for break sessions
   - New API endpoints: `/api/breaks/*`
-- **Database Schema**: Added `git_syncs` and `breaks` tables with full CRUD operations
-- **Enhanced Quick Actions**: Added Git Sync and Take Break actions with improved visual design
+- **Issue/Bug Tracking System**:
+  - Comprehensive issue tracker with full CRUD operations
+  - Priority levels (critical, high, medium, low)
+  - Status management (open, in-progress, resolved, closed)
+  - Category classification (bug, feature, enhancement, task)
+  - Lines affected and time estimation tracking
+  - Advanced filtering and search capabilities
+  - New API endpoints: `/api/issues/*`
+- **Enhanced Metrics & Analytics**:
+  - Lines of Code tracking (written, deleted, modified)
+  - Code quality scores and performance metrics
+  - Test coverage tracking and productivity analytics
+  - Weekly aggregations and trend analysis
+  - File changes tracking with detailed activity logs
+  - Advanced productivity metrics dashboard
+  - New API endpoints: `/api/metrics/enhanced/*`, `/api/file-changes/*`
+- **File Persistence System**:
+  - Comprehensive backup and restore functionality
+  - CSV export for all data types
+  - Daily snapshots and automated cleanup
+  - Data import/export with version control
+  - New API endpoints: `/api/backup`, `/api/restore/*`, `/api/export/csv`
+- **Database Schema**: Added `git_syncs`, `breaks`, `issues`, `metrics`, and `file_changes` tables
+- **Professional UX**: Enhanced with tabbed navigation, better organization, and management tools
 
 ## Changelog
 - July 05, 2025. Initial setup

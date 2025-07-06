@@ -5,7 +5,9 @@ import {
   BarChart3, 
   Download, 
   Coffee, 
-  RefreshCw 
+  RefreshCw,
+  Bug,
+  Settings
 } from "lucide-react";
 
 interface QuickActionsProps {
@@ -14,9 +16,10 @@ interface QuickActionsProps {
   onExportData: () => void;
   onGitSync: () => void;
   onTakeBreak: () => void;
+  onManageIssues: () => void;
 }
 
-export default function QuickActions({ onLogCommit, onAddTask, onExportData, onGitSync, onTakeBreak }: QuickActionsProps) {
+export default function QuickActions({ onLogCommit, onAddTask, onExportData, onGitSync, onTakeBreak, onManageIssues }: QuickActionsProps) {
   return (
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 p-6">
       <h4 className="text-lg font-semibold text-slate-800 mb-6 flex items-center">
@@ -79,6 +82,20 @@ export default function QuickActions({ onLogCommit, onAddTask, onExportData, onG
           <div className="text-left">
             <div className="text-sm font-medium text-slate-700">Take Break</div>
             <div className="text-xs text-slate-500">Start break timer</div>
+          </div>
+        </Button>
+
+        <Button
+          onClick={onManageIssues}
+          variant="ghost"
+          className="w-full justify-start p-4 h-auto border border-slate-200/50 hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 hover:border-red-200 transition-all duration-200 group"
+        >
+          <div className="bg-red-100 p-2 rounded-lg mr-3 group-hover:bg-red-200 transition-colors">
+            <Bug className="h-4 w-4 text-red-600" />
+          </div>
+          <div className="text-left">
+            <div className="text-sm font-medium text-slate-700">Manage Issues</div>
+            <div className="text-xs text-slate-500">Track bugs & features</div>
           </div>
         </Button>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import TimerSection from "@/components/timer-section";
 import MetricsOverview from "@/components/metrics-overview";
+import EnhancedMetrics from "@/components/enhanced-metrics";
 import GoalTracker from "@/components/goal-tracker";
 import RecentActivity from "@/components/recent-activity";
 import QuickActions from "@/components/quick-actions";
@@ -9,7 +10,9 @@ import AddTaskModal from "@/components/modals/add-task-modal";
 import EditGoalsModal from "@/components/modals/edit-goals-modal";
 import GitSyncModal from "@/components/modals/git-sync-modal";
 import BreakTimerModal from "@/components/modals/break-timer-modal";
+import IssueTrackerModal from "@/components/modals/issue-tracker-modal";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Code2, 
   Settings, 
@@ -19,7 +22,10 @@ import {
   Download,
   GitBranch,
   Clock,
-  Calendar
+  Calendar,
+  Bug,
+  TrendingUp,
+  Archive
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -28,6 +34,8 @@ export default function Dashboard() {
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
   const [isGitModalOpen, setIsGitModalOpen] = useState(false);
   const [isBreakModalOpen, setIsBreakModalOpen] = useState(false);
+  const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const isMobile = useIsMobile();
 
   const handleExportData = () => {
@@ -72,8 +80,12 @@ export default function Dashboard() {
                     <span>Goals</span>
                   </a>
                   <a href="#" className="text-slate-500 hover:text-slate-700 pb-4 px-1 text-sm font-medium flex items-center space-x-1">
-                    <GitBranch className="h-4 w-4" />
-                    <span>Git</span>
+                    <Bug className="h-4 w-4" />
+                    <span>Issues</span>
+                  </a>
+                  <a href="#" className="text-slate-500 hover:text-slate-700 pb-4 px-1 text-sm font-medium flex items-center space-x-1">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>Analytics</span>
                   </a>
                 </nav>
               )}
@@ -97,23 +109,88 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <TimerSection />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <MetricsOverview />
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="overview" className="flex items-center space-x-2">
+              <Home className="h-4 w-4" />
+              <span>Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center space-x-2">
+              <TrendingUp className="h-4 w-4" />
+              <span>Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="management" className="flex items-center space-x-2">
+              <Archive className="h-4 w-4" />
+              <span>Management</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="space-y-6">
-            <GoalTracker onEditGoals={() => setIsGoalsModalOpen(true)} />
-            <RecentActivity />
-            <QuickActions
-              onLogCommit={() => setIsCommitModalOpen(true)}
-              onAddTask={() => setIsTaskModalOpen(true)}
-              onExportData={handleExportData}
-              onGitSync={() => setIsGitModalOpen(true)}
-              onTakeBreak={() => setIsBreakModalOpen(true)}
-            />
-          </div>
-        </div>
+          <TabsContent value="overview" className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <MetricsOverview />
+              </div>
+
+              <div className="space-y-6">
+                <GoalTracker onEditGoals={() => setIsGoalsModalOpen(true)} />
+                <RecentActivity />
+                <QuickActions
+                  onLogCommit={() => setIsCommitModalOpen(true)}
+                  onAddTask={() => setIsTaskModalOpen(true)}
+                  onExportData={handleExportData}
+                  onGitSync={() => setIsGitModalOpen(true)}
+                  onTakeBreak={() => setIsBreakModalOpen(true)}
+                  onManageIssues={() => setIsIssueModalOpen(true)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-8">
+            <EnhancedMetrics />
+          </TabsContent>
+
+          <TabsContent value="management" className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 p-8">
+                <h3 className="text-xl font-semibold text-slate-800 mb-6 flex items-center">
+                  <Bug className="h-6 w-6 mr-2 text-red-500" />
+                  Issue Management
+                </h3>
+                <p className="text-slate-600 mb-6">
+                  Track bugs, features, and enhancements. Manage your project issues with priority levels and status tracking.
+                </p>
+                <button
+                  onClick={() => setIsIssueModalOpen(true)}
+                  className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Open Issue Tracker
+                </button>
+              </div>
+
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200/50 p-8">
+                <h3 className="text-xl font-semibold text-slate-800 mb-6 flex items-center">
+                  <Archive className="h-6 w-6 mr-2 text-blue-500" />
+                  Data Management
+                </h3>
+                <p className="text-slate-600 mb-6">
+                  Backup and restore your productivity data. Export reports and manage your development metrics safely.
+                </p>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleExportData}
+                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                  >
+                    Export Data
+                  </button>
+                  <button className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200">
+                    Create Backup
+                  </button>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Mobile Navigation */}
@@ -133,8 +210,8 @@ export default function Dashboard() {
               <span className="text-xs">Goals</span>
             </button>
             <button className="flex flex-col items-center space-y-1 text-slate-400">
-              <GitBranch className="h-5 w-5" />
-              <span className="text-xs">Git</span>
+              <Bug className="h-5 w-5" />
+              <span className="text-xs">Issues</span>
             </button>
             <button className="flex flex-col items-center space-y-1 text-slate-400" onClick={handleExportData}>
               <Download className="h-5 w-5" />
@@ -163,6 +240,10 @@ export default function Dashboard() {
       <BreakTimerModal
         isOpen={isBreakModalOpen}
         onClose={() => setIsBreakModalOpen(false)}
+      />
+      <IssueTrackerModal
+        isOpen={isIssueModalOpen}
+        onClose={() => setIsIssueModalOpen(false)}
       />
     </div>
   );
